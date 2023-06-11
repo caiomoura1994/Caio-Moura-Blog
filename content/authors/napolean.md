@@ -1,7 +1,8 @@
 ---
 name: Caio Moura
-avatar: /uploads/profile.jpeg
+avatar: /uploads/1655815240189.jpeg
 ---
+
 
 
 
