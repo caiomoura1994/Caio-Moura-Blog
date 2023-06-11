@@ -1,0 +1,38 @@
+{
+  "header": {
+    "icon": {
+      "name": "BiWorld",
+      "color": "orange",
+      "style": "circle"
+    },
+    "name": "Caio Moura | FullStack Developer Node, React, Python, Django",
+    "color": "default",
+    "nav": [
+      {
+        "href": "",
+        "label": "Home"
+      },
+      {
+        "href": "about",
+        "label": "Covers Letter"
+      },
+      {
+        "href": "posts",
+        "label": "Blog"
+      }
+    ]
+  },
+  "footer": {
+    "color": "default",
+    "social": {
+      "facebook": "/",
+      "twitter": "/",
+      "instagram": "/"
+    }
+  },
+  "theme": {
+    "color": "blue",
+    "font": "sans",
+    "darkMode": "system"
+  }
+}

@@ -1,0 +1,119 @@
+---
+title: Using the useModal Hook with Context API
+heroImg: ''
+excerpt: >
+  In this article, we will explore how to utilize the useModal hook in
+  conjunction with React’s Context API to create a flexible modal management
+  system in a React application.
+author: content/authors/napolean.md
+date: 2022-05-27T17:00:00.000Z
+---
+
+# The useModal Hook
+
+In this article, we will explore how to utilize the useModal hook in conjunction with React’s Context API to create a flexible modal management system in a React application.
+
+Firstly, let’s review the useModal hook that will be used in our example. This hook allows us to control the state of modals in our application in a simple and flexible manner. Here’s the code for the hook:
+
+```typescript
+import { useState } from 'react';
+export function useModal<T, D>(defaultOptions = {} as T, withData = false) {
+  const [modalsStatus, setModalsStatus] = useState(defaultOptions);
+  const enableModalStatus = (key, data) => {
+    setModalsStatus({ ...modalsStatus, [key]: withData ? data : true });
+  };
+  const disableModalStatus = (key) => {
+    setModalsStatus({ ...modalsStatus, [key]: withData ? null : false });
+  };
+  const toggleModalStatus = (key, data) => {
+    if (!withData) {
+      return setModalsStatus({ ...modalsStatus, [key]: !modalsStatus[key] });
+    }
+    const newDataValue = modalsStatus[key] ? null : data;
+    return setModalsStatus({ ...modalsStatus, [key]: newDataValue });
+  };
+  return {
+    modalsStatus,
+    disableModalStatus,
+    enableModalStatus,
+    toggleModalStatus,
+  };
+}
+
+
+```
+
+# Utilizing the Context API
+
+The Context API is a powerful tool in React that allows us to share data between components without the need to manually pass props throughout the component tree. Let’s create a context to store the modal state using the useModal hook.
+
+```typescript
+import { createContext, useContext } from 'react';
+import { useModal } from './useModal';
+// Create the context
+const ModalContext = createContext();
+// Context provider
+export function ModalProvider({ children }) {
+  const modal = useModal();
+  return (
+    <ModalContext.Provider value={modal}>
+      {children}
+    </ModalContext.Provider>
+  );
+}
+// Custom hook to access the context
+export function useModalContext() {
+  return useContext(ModalContext);
+}
+```
+
+# Using the useModal Hook with Context API
+
+Now that we have our context set up, we can use it along with the useModal hook in our components. Let’s create an example of a button component that opens a modal when clicked:
+
+```javascript
+import { useModalContext } from './ModalContext';
+function Button() {
+  const { toggleModalStatus } = useModalContext();
+  const handleClick = () => {
+    toggleModalStatus('modal1');
+  };
+  return (
+    <button onClick={handleClick}>Open Modal</button>
+  );
+}
+```
+
+In this example, we import the useModalContext hook from our context and use the toggleModalStatus function to toggle the state of the modal with the key ‘modal1’. The same pattern can be applied to other components that need to interact with the modals.
+
+# Displaying the Modals
+
+Next, let’s create a component that displays the modals based on the context’s state. We can use the useModalContext hook to access the modal state and then render the modals based on that state. Here’s an example:
+
+```javascript
+import { useModalContext } from './ModalContext';
+function ModalContainer() {
+  const { modalsStatus, toggleModalStatus } = useModalContext();
+  const toggleModal = () => toggleModalStatus('modal1');
+  return (
+    <div>
+      <button onClick={toggleModal}>Open Modal</button>
+      {modalsStatus.modal1 && (
+        <div>
+          <h2>Modal 1</h2>
+          <p>Modal 1 content</p>
+          <button onClick={toggleModal}>Close Modal</button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+In this example, we import the useModalContext hook to access the modal state. We use the modalsStatus property to check if the modal with the key ‘modal1’ is open, and if so, we render the content of the modal. We also add a button to close the modal and another button to open the modal, calling the toggleModal function with the key ‘modal1’.
+
+# Conclusion
+
+In this article, we explored how to use the useModal hook in conjunction with React’s Context API to create a flexible modal management system. By leveraging the Context API, we can efficiently share the state of the modals across components, making it easier to interact with and display the modals. I hope this article has been helpful, and that you can apply these concepts to your own projects!
+
+I hope this article meets your needs! If you have any further questions, feel free to ask.

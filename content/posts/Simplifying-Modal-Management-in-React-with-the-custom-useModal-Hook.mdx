@@ -1,0 +1,219 @@
+---
+title: Simplifying Modal Management in React with the custom useModal Hook
+excerpt: ''
+author: content/authors/napolean.md
+---
+
+One of the things that often bothers me in my daily coding is the need to create a separate useState for each new modal component and set up the logic to show and hide the modal. When dealing with multiple modal components, this can become quite cumbersome. Let me demonstrate a not-so-great example below and how I would prefer it to be.
+
+# A Simple Case with 3 Modals and No Data
+
+```javascript
+import { useState } from 'react';
+const App = () => {
+  const [showModal1, setShowModal1] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
+  // ... more code
+  return (
+    <>
+      <Modal1 show={showModal1} setShowModal={setShowModal1} />
+      <Modal2 show={showModal2} setShowModal={setShowModal2} />
+      <Modal3 show={showModal3} setShowModal={setShowModal3} />
+      // ... more code
+    </>
+  );
+};
+```
+
+I find it tedious and repetitive to create separate state variables for each modal. This approach becomes even more challenging when dealing with components that have many responsibilities. Ideally, I would like to simplify the process of toggling the modals like this:
+
+```typescript
+import { useState } from 'react';
+interface IModals {
+  modal1: boolean;
+  modal2: boolean;
+  modal3: boolean;
+}
+const App = () => {
+  const { modalsStatus, toggleModalStatus } = useModal<IModals>();
+  return (
+    <>
+      <Modal1 show={modalsStatus.modal1} toggleModal={() => toggleModalStatus('modal1')} />
+      <Modal2 show={modalsStatus.modal2} toggleModal={() => toggleModalStatus('modal2')} />
+      <Modal3 show={modalsStatus.modal3} toggleModal={() => toggleModalStatus('modal3')} />
+    </>
+  );
+};
+```
+
+With this approach, my component becomes cleaner, and it satisfies 90% of my needs. Now let me show you how I built the useModal component.
+
+```typescript
+import { useState } from 'react';
+
+export function useModal<T>(defaultOptions = {} as T) {
+  const [modalsStatus, setModalsStatus] = useState(defaultOptions);
+  const enableModalStatus = (key) => {
+    setModalsStatus({ ...modalsStatus, [key]: true });
+  };
+  const disableModalStatus = (key) => {
+    setModalsStatus({ ...modalsStatus, [key]: false });
+  };
+  const toggleModalStatus = (key) => {
+    setModalsStatus({ ...modalsStatus, [key]: !modalsStatus[key] });
+  };
+  return {
+    modalsStatus,
+    disableModalStatus,
+    enableModalStatus,
+    toggleModalStatus,
+  };
+}
+```
+
+Let’s not forget to test our hook. To simplify testing, I’m going to use the @testing-library/react-hooks library.
+
+```javascript
+import { renderHook, act } from '@testing-library/react-hooks';
+import { useModal } from './useModal';
+describe('useModal', () => {
+  it('should enable modal status', () => {
+    const { result } = renderHook(() => useModal({ modal1: false }));
+    act(() => {
+      result.current.enableModalStatus('modal1');
+    });
+    expect(result.current.modalsStatus.modal1).toBeTruthy();
+  });
+  it('should disable modal status', () => {
+    const { result } = renderHook(() => useModal({ modal1: true }));
+    act(() => {
+      result.current.disableModalStatus('modal1');
+    });
+    expect(result.current.modalsStatus.modal1).toBeFalsy();
+  });
+  it('should toggle modal status to null when already true', () => {
+    const { result } = renderHook(() => useModal({ modal1: true }));
+    act(() => {
+      result.current.toggleModalStatus('modal1');
+    });
+    expect(result.current.modalsStatus.modal1).toBeNull();
+  });
+  it('should toggle modal status to data when already false', () => {
+    const { result } = renderHook(() => useModal({ modal1: false }));
+    act(() => {
+      result.current.toggleModalStatus('modal1');
+    });
+    expect(result.current.modalsStatus.modal1).toBeTruthy();
+  });
+  it('should toggle modal status to true when not defined', () => {
+    const { result } = renderHook(() => useModal({}));
+    act(() => {
+      result.current.toggleModalStatus('modal1');
+    });
+    expect(result.current.modalsStatus.modal1).toBeTruthy();
+  });
+});
+```
+
+Another problem I often encounter is sharing data between these modal components. In some cases, the modals need to receive data to display, so it’s not just a simple toggle. Here’s how the component might look in such a scenario:
+
+```javascript
+import { useState } from 'react';
+const App = () => {
+  const [showModal1, setShowModal1] = useState(false);
+  const [dataModal1, setDataModal1] = useState({});
+  const [showModal2, setShowModal2] = useState(false);
+  const [dataModal2, setDataModal2] = useState({});
+  const [showModal3, setShowModal3] = useState(false);
+  const [dataModal3, setDataModal3] = useState({});
+  // ... more code
+  return (
+    <>
+      <Modal1 show={showModal1} setShowModal={setShowModal1} setDataModal={setDataModal1} dataModal={dataModal1} />
+      <Modal2 show={showModal2} setShowModal={setShowModal2} setDataModal={setDataModal2} dataModal={dataModal2} />
+      <Modal3 show={showModal3} setShowModal={setShowModal3} setDataModal={setDataModal3} dataModal={dataModal3} />
+      // ... more code
+    </>
+  );
+};
+```
+
+To address this issue, I want to continue using a similar approach to show or hide the modals:
+
+```typescript
+import { useState } from 'react';
+interface IModals {
+  modal1: null | IData;
+  modal2: null | IData;
+  modal3: null | IData;
+}
+const App = () => {
+  const { modalsStatus, toggleModalStatus } = useModalWithData<IModals>();
+  return (
+    <>
+      <Modal1 show={modalsStatus.modal1} toggleModal={(data) => toggleModalStatus('modal1', data)} />
+      <Modal2 show={modalsStatus.modal2} toggleModal={(data) => toggleModalStatus('modal2', data)} />
+      <Modal3 show={modalsStatus.modal3} toggleModal={(data) => toggleModalStatus('modal3', data)} />
+    </>
+  );
+};
+
+
+```
+
+Now let me show you how I implemented the useModalWithData component:
+
+```typescript
+import { useState } from 'react';
+export function useModalWithData<T, D>(defaultOptions = {} as T) {
+  const [modalsStatus, setModalsStatus] = useState(defaultOptions);
+  const enableModalStatus = (key, data) => {
+    setModalsStatus({ ...modalsStatus, [key]: data });
+  };
+  const disableModalStatus = (key) => {
+    setModalsStatus({ ...modalsStatus, [key]: null });
+  };
+  const toggleModalStatus = (key, data) => {
+    const newDataValue = modalsStatus[key] ? null : data;
+    return setModalsStatus({ ...modalsStatus, [key]: newDataValue });
+  };
+  return {
+    modalsStatus,
+    disableModalStatus,
+    enableModalStatus,
+    toggleModalStatus,
+  };
+}
+```
+
+If you prefer to combine both functionalities into a single hook, you can use the following approach:
+
+```typescript
+import { useState } from 'react';
+
+export function useModal<T, D>(defaultOptions = {} as T, withData = false) {
+  const [modalsStatus, setModalsStatus] = useState(defaultOptions);
+  const enableModalStatus = (key, data) => {
+    setModalsStatus({ ...modalsStatus, [key]: withData ? data : true });
+  };
+  const disableModalStatus = (key) => {
+    setModalsStatus({ ...modalsStatus, [key]: withData ? null : false });
+  };
+  const toggleModalStatus = (key, data) => {
+    if (!withData) {
+      return setModalsStatus({ ...modalsStatus, [key]: !modalsStatus[key] });
+    }
+    const newDataValue = modalsStatus[key] ? null : data;
+    return setModalsStatus({ ...modalsStatus, [key]: newDataValue });
+  };
+  return {
+    modalsStatus,
+    disableModalStatus,
+    enableModalStatus,
+    toggleModalStatus,
+  };
+}
+```
+
+I hope this revised article meets your requirements and provides a clearer explanation of how to create more flexible modal components.
