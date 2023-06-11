@@ -41,11 +41,12 @@ blocks:
         icon: false
         link: 'https://medium.com/@caiomoura1994'
     image:
-      src: /uploads/profile.jpeg
+      src: /uploads/1655815240189.jpeg
       alt: Caio Moura Profile Image
     color: default
     _template: hero
 ---
+
 
 
 
