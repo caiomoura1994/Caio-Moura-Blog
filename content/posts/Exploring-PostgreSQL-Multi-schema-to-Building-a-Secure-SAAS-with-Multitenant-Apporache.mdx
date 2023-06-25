@@ -18,27 +18,27 @@ date: 2023-06-25T03:00:00.000Z
 
 Lately, I’ve been delving into the world of cloud-based applications and researching the best way to build a secure Software as a Service (SAAS) solution. Data security is a primary concern for my project, and I’m searching for solutions that ensure proper separation of client environments. Initially, I considered the idea of creating a virtual machine for each client to avoid any potential data leaks. However, in the long run, I realized that wouldn’t be the most efficient approach. That’s when I began exploring the concept of multitenancy.
 
-Multitenancy: A Solution for Data Security
+**Multitenancy: A Solution for Data Security**
 
 While researching secure approaches for building a SAAS, I came across the concept of multitenancy. This approach allows for the separation of client data within a shared environment. Upon further investigation, I discovered a powerful combination of Django and PostgreSQL Multi-Schema, which enables the implementation of efficient and secure multitenancy.
 
-Advantages of Multitenancy with Django and PostgreSQL Multi-Schema
+**Advantages of Multitenancy with Django and PostgreSQL Multi-Schema**
 
 By opting for the multitenancy approach with Django and PostgreSQL Multi-Schema, I realized I could leverage several benefits:
 
-1. Data Security: Multitenancy ensures proper separation of data between clients, mitigating the risk of sensitive information leaks. With PostgreSQL Multi-Schema, it’s possible to create separate schemas within the database for each client, guaranteeing a high level of data isolation.
-2. Scalability: The multitenancy approach allows for efficient scaling of the application. With PostgreSQL Multi-Schema, I can easily add new schemas as the number of clients increases, without impacting performance or system stability.
-3. Simplified Maintenance: Using separate schemas for each client streamlines database maintenance. I can perform updates and schema changes independently for each client without affecting the others.
-4. Resource Efficiency: Multitenancy enables sharing a single instance of the application and database among all clients, resulting in hardware and infrastructure resource savings.
+1. **Data Security:** Multitenancy ensures proper separation of data between clients, mitigating the risk of sensitive information leaks. With PostgreSQL Multi-Schema, it’s possible to create separate schemas within the database for each client, guaranteeing a high level of data isolation.
+2. **Scalability:** The multitenancy approach allows for efficient scaling of the application. With PostgreSQL Multi-Schema, I can easily add new schemas as the number of clients increases, without impacting performance or system stability.
+3. **Simplified Maintenance:** Using separate schemas for each client streamlines database maintenance. I can perform updates and schema changes independently for each client without affecting the others.
+4. **Resource Efficiency:** Multitenancy enables sharing a single instance of the application and database among all clients, resulting in hardware and infrastructure resource savings.
 
 However, it’s important to consider the potential drawbacks associated with this approach:
 
-1. Complexity: Implementing a multitenant system requires careful planning and a deep understanding of the Django framework and PostgreSQL. Dealing with data separation into schemas adds an extra layer of complexity to development and maintenance.
-2. Development Cost: Building a multitenant SAAS may require a larger investment in terms of time and development resources. The data separation into individual schemas demands solid architecture and careful data modeling, which can increase complexity and development costs.
-3. PostgreSQL Limitations: While PostgreSQL is a popular choice for supporting multitenancy with schemas, it may have limitations in terms of scalability and performance, especially as the number of clients or data complexity significantly grows.
-4. Update Management: Performing schema updates and maintenance can become challenging in a multitenant environment. Care must be taken to ensure that changes do not inadvertently impact specific tenants’ data or functionality.
+1. **Complexity:** Implementing a multitenant system requires careful planning and a deep understanding of the Django framework and PostgreSQL. Dealing with data separation into schemas adds an extra layer of complexity to development and maintenance.
+2. **Development Cost:** Building a multitenant SAAS may require a larger investment in terms of time and development resources. The data separation into individual schemas demands solid architecture and careful data modeling, which can increase complexity and development costs.
+3. **PostgreSQL Limitations: **While PostgreSQL is a popular choice for supporting multitenancy with schemas, it may have limitations in terms of scalability and performance, especially as the number of clients or data complexity significantly grows.
+4. **Update Management: **Performing schema updates and maintenance can become challenging in a multitenant environment. Care must be taken to ensure that changes do not inadvertently impact specific tenants’ data or functionality.
 
-Do you Know about Django Multitenant 😍
+**Do you Know about Django Multitenant 😍**
 
 During my research, I came across a valuable tool called Django Multitenant, which facilitates the implementation of multitenancy in the Django framework. This library provides powerful features for managing multitenant environments, including support for PostgreSQL Multi-Schema.
 
